@@ -3,12 +3,12 @@
 
 -- FIX YOUR OWN PARAMETERS
 local plantColor1 = Color3.new(0.0941176, 0.992157, 0.498039) 	-- Fix the color1 of your plants
-local plantColor2 = Color3.new(0.541176, 1, 0.376471)		-- Fix the color2 of your plants
-local plantColor3 = Color3.new(0, 0.541176, 0.25098)		-- Fix the color3 of your plants
+local plantColor2 = Color3.new(0.541176, 1, 0.376471)			-- Fix the color2 of your plants
+local plantColor3 = Color3.new(0, 0.541176, 0.25098)			-- Fix the color3 of your plants
 
 local plantHeight = 7 			-- Fix average height size of your Plants. The height variation is 40% to 110%
-local plantWidth = .1  			-- Fix average width  size of your plants. The width  variation is 90% to 120%
-local spaceBetweenPlants = 1.7		-- Fix average space between your plants.
+local plantWidth = .1  			-- Fix average width  size of your plants. The width  variation is 90% to 110%
+local spaceBetweenPlants = 1.8	-- Fix average space between your plants.
 -- END FIX YOUR OWN PARAMETERS 
 
 ------------------------------
@@ -34,7 +34,8 @@ model.Parent = grass
 -- create Plants on Parcel
 local function createPlantsOnParcel() 
 	for countZ = 1, sizeZ, plantWidth+spaceBetweenPlants do	
-		for count = 1, sizeX, plantWidth+spaceBetweenPlants do
+		local randomSpacingVariation = math.random(90,110)
+		for count = 1, sizeX, randomSpacingVariation/100*spaceBetweenPlants do
 			local randomHeigthVariation = math.random(40,110)
 			local randomWidthVariation = math.random(90,120)
 			local random = math.random(1,4)
@@ -50,8 +51,9 @@ local function createPlantsOnParcel()
 			-- create part of Plant
 			local part = Instance.new("Part")
 			part.CanCollide = false
+			part.Material = Enum.Material.SmoothPlastic
 			part.Parent = model
-			part.Size = Vector3.new(randomWidthVariation/100*plantWidth, randomHeigthVariation/100*0.8, randomWidthVariation/100*plantWidth)
+			part.Size = Vector3.new(randomWidthVariation/100*plantWidth, 0, randomWidthVariation/100*plantWidth)
 			part.Position = Vector3.new(grassLeftTopX+count, 13.25, grassLeftTopZ+countZ)
 			part.Anchored = true
 			part.Transparency = 0
