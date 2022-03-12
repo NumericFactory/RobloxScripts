@@ -1,19 +1,26 @@
 -- GrowUp Plant
 -- @Author: @NumericFactory (Frederic LOSSIGNOL)
--- Configuration of the parcel
-local grass = script.Parent
-local posX = -1067;
-local posY = 13.25;
-local posZ = -649.5;
-local sizeX = 34
-local sizeZ = 40
-local pos = Vector3.new(posX, posY, posZ);
-local towerBaseSize = 30
 
--- Decide on two colors that are different in hue
-local hue = 1/2
-local color0 = Color3.fromHSV(hue, 1, 1)
-local color1 = Color3.fromHSV((hue + .35) % 1, 1, 1)
+-- FIX YOUR OWN PARAMETERS
+local plantColor1 = Color3.new(0.0941176, 0.992157, 0.498039) 	-- Fix the color1 of your plants
+local plantColor2 = Color3.new(0.541176, 1, 0.376471)		-- Fix the color2 of your plants
+local plantColor3 = Color3.new(0, 0.541176, 0.25098)		-- Fix the color3 of your plants
+
+local plantHeight = 7 						-- Fix average height size of your Plants. The height variation is 40% to 110%
+local plantWidth = .1  						-- Fix average width  size of your plants. The width  variation is 90% to 110%
+local spaceBetweenPlants = 1.7
+-- END FIX YOUR OWN PARAMETERS 
+
+------------------------------
+
+-- Get the coords of the parcel
+local grass = script.Parent
+local posX = grass.Position.X;
+local posY = grass.Position.X;
+local posZ = grass.Position.Z;
+local sizeX = grass.Size.X
+local sizeZ = grass.Size.Z
+local pos = Vector3.new(posX, posY, posZ);
 
 local grassLeftTopX = posX - sizeX/2
 local grassLeftTopZ = posZ - sizeZ/2
@@ -26,46 +33,43 @@ model.Parent = grass
 
 -- create Plants on Parcel
 local function createPlantsOnParcel() 
-	for countZ = 1, sizeZ, 2 do	
-		for count = 1, sizeX, 2 do
+	for countZ = 1, sizeZ, plantWidth+spaceBetweenPlants do	
+		for count = 1, sizeX, plantWidth+spaceBetweenPlants do
 			local randomAddSize = math.random(40,110)
 			local random = math.random(1,4)
 			local color = Color3.new(0.0941176, 0.992157, 0.498039)	
 			-- determinate color
 			if(random<2) then
-				color = Color3.new(0.0941176, 0.992157, 0.498039)
+				color = plantColor1
 			elseif(random<3) then
-				color = Color3.new(0.541176, 1, 0.376471)
+				color = plantColor2
 			else
-				color = Color3.new(0, 0.541176, 0.25098)
+				color = plantColor3
 			end
 			-- create part of Plant
 			local part = Instance.new("Part")
 			part.CanCollide = false
 			part.Parent = model
-			part.Size = Vector3.new(.2,randomAddSize/100*0.8, .2)
+			part.Size = Vector3.new(plantWidth,randomAddSize/100*0.8, plantWidth)
 			part.Position = Vector3.new(grassLeftTopX+count, 13.25, grassLeftTopZ+countZ)
 			part.Anchored = true
 			part.Transparency = 0
 			part.Color = color
 			part:SetAttribute('randomAddSize', randomAddSize/100)	
-
 		end
 	end
 end
 
--- growUpThisPlant
+-- grow up all Plants
 local function growUpAllPlants()
 	wait(10)
 	local children = script.Parent:FindFirstChild(model.Name):GetChildren()
 	for count = 15, 120 do
 		for i = 1, #children do		
 			local child = children[i]
-			--local addSize = child:GetAttribute("randomAddSize")
-			--local size = tonumber(addSize)*tonumber(count/10)
 			-- grow Up
 			local perc = count / 30
-			child.Size = Vector3.new(.2,  tonumber(child:GetAttribute("randomAddSize"))*tonumber(count/18), .2)
+			child.Size = Vector3.new(plantWidth,  tonumber(child:GetAttribute("randomAddSize"))*tonumber(count/(120/plantHeight)), plantWidth)
 			--child.Color = Color3.new(0, 1*perc, 0.498039*perc)
 		end
 		wait(.1)
@@ -73,13 +77,15 @@ local function growUpAllPlants()
 end
 
 
-print(grass.Position)
+print(grass.Position.X)
 print(grass.Size)
 -- execute create and grow up Plants
 createPlantsOnParcel() 
 growUpAllPlants()
 
 ----------------
+
+
 -- TEST
 --growUpPlant
 --local function growUpPlant(plantType)
