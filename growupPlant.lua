@@ -6,9 +6,9 @@ local plantColor1 = Color3.new(0.0941176, 0.992157, 0.498039) 	-- Fix the color1
 local plantColor2 = Color3.new(0.541176, 1, 0.376471)		-- Fix the color2 of your plants
 local plantColor3 = Color3.new(0, 0.541176, 0.25098)		-- Fix the color3 of your plants
 
-local plantHeight = 7 						-- Fix average height size of your Plants. The height variation is 40% to 110%
-local plantWidth = .1  						-- Fix average width  size of your plants. The width  variation is 90% to 110%
-local spaceBetweenPlants = 1.7
+local plantHeight = 7 			-- Fix average height size of your Plants. The height variation is 40% to 110%
+local plantWidth = .1  			-- Fix average width  size of your plants. The width  variation is 90% to 120%
+local spaceBetweenPlants = 1.7		-- Fix average space between your plants.
 -- END FIX YOUR OWN PARAMETERS 
 
 ------------------------------
@@ -35,7 +35,8 @@ model.Parent = grass
 local function createPlantsOnParcel() 
 	for countZ = 1, sizeZ, plantWidth+spaceBetweenPlants do	
 		for count = 1, sizeX, plantWidth+spaceBetweenPlants do
-			local randomAddSize = math.random(40,110)
+			local randomHeigthVariation = math.random(40,110)
+			local randomWidthVariation = math.random(90,120)
 			local random = math.random(1,4)
 			local color = Color3.new(0.0941176, 0.992157, 0.498039)	
 			-- determinate color
@@ -50,12 +51,13 @@ local function createPlantsOnParcel()
 			local part = Instance.new("Part")
 			part.CanCollide = false
 			part.Parent = model
-			part.Size = Vector3.new(plantWidth,randomAddSize/100*0.8, plantWidth)
+			part.Size = Vector3.new(randomWidthVariation/100*plantWidth, randomHeigthVariation/100*0.8, randomWidthVariation/100*plantWidth)
 			part.Position = Vector3.new(grassLeftTopX+count, 13.25, grassLeftTopZ+countZ)
 			part.Anchored = true
 			part.Transparency = 0
 			part.Color = color
-			part:SetAttribute('randomAddSize', randomAddSize/100)	
+			part:SetAttribute('randomHeigthVariation', randomHeigthVariation/100)
+			part:SetAttribute('randomWidthVariation', randomWidthVariation/100)
 		end
 	end
 end
@@ -69,7 +71,11 @@ local function growUpAllPlants()
 			local child = children[i]
 			-- grow Up
 			local perc = count / 30
-			child.Size = Vector3.new(plantWidth,  tonumber(child:GetAttribute("randomAddSize"))*tonumber(count/(120/plantHeight)), plantWidth)
+			child.Size = Vector3.new( 
+				tonumber(child:GetAttribute("randomWidthVariation")) * tonumber(plantWidth), 
+				tonumber(child:GetAttribute("randomHeigthVariation"))*tonumber(count/(120/plantHeight)), 
+				tonumber(child:GetAttribute("randomWidthVariation")) * tonumber(plantWidth)
+			)
 			--child.Color = Color3.new(0, 1*perc, 0.498039*perc)
 		end
 		wait(.1)
