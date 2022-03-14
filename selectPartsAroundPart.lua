@@ -16,12 +16,7 @@ local UIS = game:GetService('UserInputService')
 local player = game.Players.LocalPlayer
 local character = player.Character
 
-
 local mouse = player:GetMouse()
-
--- collect parts and group them by tag
-local Plants = game.Workspace:GetChildren('Plant')
-print(Plants[1].name)
 
 -- Check if pointB is in area of pointA (circle) 
 -- With Pythagore we check if distance between these 2 points < than radius we determinate
@@ -61,8 +56,7 @@ UIS.InputChanged:Connect(function()
 			--player.PlayerGui.NameGui.Adornee = mouse.Target
 			--player.PlayerGui.NameGui.TextLabel.Text = mouse.Target.Name
 			-- mouse.Target.Color = Color3.new(0.333333, 1, 1)
-		else
-			
+		else		
 		end
 	end
 end)
