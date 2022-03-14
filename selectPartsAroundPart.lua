@@ -6,9 +6,9 @@
 ------------------------------
 -- FIX YOUR OWN PARAMETERS
 local partParentName = 'Plant'
-local radius = 2 											-- Fix the distance of selected plznt (all plants around this distance will be selected too)
-local selectionColor = Color3.new(0.00784314, 0.521569, 1)  -- Fix the color of Selection
-local selectionNeon = true 									-- Fix if selection Material is neon (true or false)
+local radius = 2 						-- Fix the distance of selected plznt (all plants around this distance will be selected too)
+local selectionColor = Color3.new(0.00784314, 0.521569, 1)  	-- Fix the color of Selection
+local selectionNeon = true 					-- Fix if selection Material is neon (true or false)
 -- END FIX YOUR OWN PARAMETERS 
 ------------------------------
 
@@ -33,7 +33,7 @@ local function checkIfPointIsInArea(pointAPosition, pointBPosition, rad)
 	return false
 end
 
-
+-- When mouse move, detect position of selected part, and select other parts around
 UIS.InputChanged:Connect(function()
 	if mouse.Target then
 		if(mouse.Target.Parent.Name == 'Plant') then	
