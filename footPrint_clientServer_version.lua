@@ -103,6 +103,9 @@ h.Running:connect(function(speed)
 	humanSpeed = speed
 end)
 
+-- execute createFootPrint()
+createFootPrint()
+
 -----------------------------------------------
 --	END SCRIPT PART 1 --
 -----------------------------------------------
@@ -111,7 +114,7 @@ end)
 
 
 -----------------------------------------------
---	START SCRIPT PART 2 --
+-- START SCRIPT PART 2
 -- (script 1 is in > StarterPlayer > StarterPlayerScripts, and named "footPrint")
 -----------------------------------------------
 
