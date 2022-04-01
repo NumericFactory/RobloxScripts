@@ -164,14 +164,3 @@ end)
 -- Execute Footprint
 --------------------
 createFootPrint()
-
-
-
-
-
-
-
-	
-	
-
-
