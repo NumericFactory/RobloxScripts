@@ -74,8 +74,6 @@ local function footPrint(humanPart, raycastPosition, groundPart)
 		--print(groundPart.Material.Name)
 		local newGroupOf2FootPrints = Instance.new("Model")
 		newGroupOf2FootPrints.Name = "TwoFeet"
-		-- the heigh of the point of groundPart under the Player
-		local raycastHeightPoint = raycastPosition.Y
 		-- the orientation of Player
 		local humanOrientationY = humanPart.Orientation.Y
 		-- create footPrint Part
@@ -101,7 +99,7 @@ local function footPrint(humanPart, raycastPosition, groundPart)
 		-- position of footPrint
 		local posX = humanPart.Position.X
 		local posZ = humanPart.Position.Z
-		footPrint1.Position = Vector3.new(raycastPosition.X, raycastHeightPoint+0.01, raycastPosition.Z)
+		footPrint1.Position = Vector3.new(raycastPosition.X, raycastPosition.Y+0.01, raycastPosition.Z)
 		
 		-- create footprint2 (clone footPrint1) 
 		local footPrint2 = footPrint1:Clone()
