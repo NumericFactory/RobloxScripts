@@ -97,8 +97,6 @@ local function footPrint(humanPart, raycastPosition, groundPart)
 		-- orientation of footprint
 		footPrint1.Orientation = Vector3.new(groundPart.Orientation.X, groundPart.Orientation.Y, groundPart.Orientation.Z)
 		-- position of footPrint
-		local posX = humanPart.Position.X
-		local posZ = humanPart.Position.Z
 		footPrint1.Position = Vector3.new(raycastPosition.X, raycastPosition.Y+0.01, raycastPosition.Z)
 		
 		-- create footprint2 (clone footPrint1) 
