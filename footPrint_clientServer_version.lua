@@ -13,11 +13,15 @@
 -- ** create a Script in > ServerScriptService, and rename it "onFootPrint"
 -- ** copy/paste the "PART 2" of this script
 
--- 3 CREATE REMOTE EVENT
+-- 3 SCRIPT PART 3
+-- ** create a Script in > ReplicatedStorage, and rename it "LocalDisappearPart"
+-- ** copy/paste the "PART 3" of this script
+
+-- 4 CREATE REMOTE EVENT
 -- ** in > "ReplicatedStorage", click "+" and create a RemoteEvent
 -- ** Rename it "RemoteEventFootPrint"
 
--- 4 Fix your own parameters below
+-- 5 Fix your own parameters below
 
 -- END INSTRUCTIONS ---------------------------
 
@@ -208,13 +212,14 @@ local function onFootPrint(player, humanPart, raycastPosition, groundPart, footP
 		Debris:AddItem(newGroupOf2FootPrints, footPrintDelay)
 
 		---- attach script under footPrint Parts
-		--local scr = replicatedStorage.LocalDisappearPart
-		--local clonedScr = scr:Clone()
-		--local clonedScr2 = scr:Clone()
-		--clonedScr.Parent = footPrint1
-		--clonedScr2.Parent = footPrint2
-		--clonedScr.Disabled = false
-		--clonedScr2.Disabled = false	
+		---- this script manage transparency progressive by fadeOut Effect
+		local scr = ReplicatedStorage.LocalDisappearPart
+		local clonedScr = scr:Clone()
+		local clonedScr2 = scr:Clone()
+		clonedScr.Parent = footPrint1
+		clonedScr2.Parent = footPrint2
+		clonedScr.Disabled = false
+		clonedScr2.Disabled = false	
 	end
 end
 
@@ -223,4 +228,19 @@ RemoteEventFootPrint.OnServerEvent:Connect(onFootPrint)
 
 -----------------------------------------------
 --	END SCRIPT PART 2 --
+-----------------------------------------------
+
+
+-----------------------------------------------
+--	END SCRIPT PART 3--
+-- in > replicatedStorage > script named "LocalDisappearPart"
+-----------------------------------------------
+local part = script.Parent
+wait(4)
+for i=1, 40, 1 do
+	part.Transparency+=0.02
+	wait(0.1)
+end
+-----------------------------------------------
+--	END SCRIPT PART 3 --
 -----------------------------------------------
