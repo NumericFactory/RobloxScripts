@@ -205,7 +205,7 @@ local function onFootPrint(player, humanPart, raycastPosition, groundPart, footP
 		-- fix CFrame box of model of 2 footPrints, and change orientation when player move
 		local orientation, size = newGroupOf2FootPrints:GetBoundingBox()
 		newGroupOf2FootPrints.PrimaryPart = footPrint1
-		newGroupOf2FootPrints:SetPrimaryPartCFrame(newGroupOf2FootPrints:GetPrimaryPartCFrame() * CFrame.new(0.9 , 1, -2))
+		newGroupOf2FootPrints:SetPrimaryPartCFrame(newGroupOf2FootPrints:GetPrimaryPartCFrame() * CFrame.new(0.9 , 0, -2))
 		newGroupOf2FootPrints:SetPrimaryPartCFrame(newGroupOf2FootPrints:GetPrimaryPartCFrame() * CFrame.Angles(0, math.rad(humanOrientationY), 0))
 
 		-- add foorPrint model, and fix the delay. After this delay, footPrints disappear from workSpace
