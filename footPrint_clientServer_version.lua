@@ -154,7 +154,7 @@ end
 --	@param : groundPart (the part of the ground under the player)
 -------------------------------------------------
 local function onFootPrint(player, humanPart, raycastPosition, groundPart, footPrintDelay, acceptedMaterials, footPrintTransparency)
-	print("HOHEY")
+	
 	-- Verify if ground material is accepted (voir les paramètres en haut)
 	if ( arrayContainsValue(acceptedMaterials, groundPart.Material.Name) and groundPart.Name ~= 'FootPrint' ) then
 
