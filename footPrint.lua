@@ -1,31 +1,36 @@
 -- Foot Print
 -- @Author: @NumericFactory (Frederic LOSSIGNOL)
+-- Instructions : 
+-- 1 Place this script in StarterPlayer/StarterPlayerScripts
+-- 2 Fix your own parameters below
 
 -----------------------------------
 -- Fix your own parameters --------
 -----------------------------------
-local footPrintDelay = 5 -- fix number of seconds (delay before footprint disappear)
-local speedForFootPrint = 12 -- fix the minimum speed of human, then foot will be print on the ground (default : if speedWalk=12, then footprints)
+local footPrintDelay = 10 -- fix number of seconds (delay before footprint disappear)
+local speedForFootPrint = 17 -- fix the minimum speed of human, then foot will be print on the ground (default : if speedWalk=12, then footprints)
 local acceptedMaterials = {"Grass", "Sand", "Ice", "SmoothPlastic"} -- add or remove Material Name (other materials dont print foot on the ground)
 local footPrinttransparency = 0.7 -- transparency of footPrint (min 0, max 1)
 ----------------------------------
 -- END Fix your own parameters ---
 ----------------------------------
 
-----------------------------------
--- UTILS FUNCTIONS ---------------
+
+-- UTILS FUNCTIONS 
 local function utils_set(list)
 	local set = {}
 	for _, l in ipairs(list) do set[l] = true end
 	return set
 end
--- verify if a value is in list (use it to verify if Material of groundPart is in AcceptedList)
+-- verify if a value is in list 
+-- use it to verify if groundPart's Material is in AcceptedList
 local function arrayContainsValue(arr, val)
 	local _set = utils_set(arr)
 	return _set[val]~= nil 
 end
--- END UTILS FUNCTIONS -----------
-----------------------------------
+-- END UTILS FUNCTIONS
+
+
 
 ----------------------------------
 ------- CODE ---------------------
@@ -43,7 +48,9 @@ model.Parent = workspace
 
 
 ----------------------------------------------
--- getPlayerHead / to have position in code --
+--	getPlayerHead
+--	@return head part of localPlayer
+--	(use it to have position of local player)
 ----------------------------------------------
 local function getPlayerHead()
 	local player  = game.Players.LocalPlayer
@@ -52,12 +59,12 @@ local function getPlayerHead()
 	return head
 end
 
-
--------------------------------------------------
--- footPrint / create a part seems footPrint ----
--- @param : humanPart (the head of player)
--- @param : raycastPosition (point hit the ground, when a ray from head of player > to the ground)
--- @param : groundPart (the part of the ground under the player)
+-------------------------------------------------------
+--	footPrint()
+--	create 2 parts seems like a footPrint
+--	@param : humanPart (the head of player)
+--	@param : raycastPosition = the hit position on the ground from workspace:Raycast() (from head of player)
+--	@param : groundPart (the part of the ground under the player)
 -------------------------------------------------
 local function footPrint(humanPart, raycastPosition, groundPart)
 	-- Verifier SI le material du sol est accepté (voir les paramètres en haut)
@@ -118,9 +125,11 @@ local function footPrint(humanPart, raycastPosition, groundPart)
 end
 
 
--------------------------------------------------
--- Create foot print when player walkspeed > 12 --
--------------------------------------------------
+--------------------------------------------------------------------
+-- 	createFootPrint() 
+--	when the local player walk at minimum speed (fixed on parameters), 
+--	create a footPrint every 0.33second at the positon of local player
+---------------------------------------------------------------------
 local function createFootPrint()
 	while true do
 		if(humanSpeed > speedForFootPrint) then	
@@ -144,7 +153,6 @@ local function createFootPrint()
 	end -- fin while
 end
 
-
 -----------------------------------
 -- get speed of player in real time
 -----------------------------------
@@ -152,8 +160,18 @@ h.Running:connect(function(speed)
 	humanSpeed = speed
 end)
 
-
 --------------------
 -- Execute Footprint
 --------------------
 createFootPrint()
+
+
+
+
+
+
+
+	
+	
+
+
