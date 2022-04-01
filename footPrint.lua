@@ -101,7 +101,7 @@ local function footPrint(humanPart, raycastPosition, groundPart)
 		-- position of footPrint
 		local posX = humanPart.Position.X
 		local posZ = humanPart.Position.Z
-		footPrint1.Position = Vector3.new(posX, raycastHeightPoint+0.01, posZ)
+		footPrint1.Position = Vector3.new(raycastPosition.X, raycastHeightPoint+0.01, raycastPosition.Z)
 		
 		-- create footprint2 (clone footPrint1) 
 		local footPrint2 = footPrint1:Clone()
