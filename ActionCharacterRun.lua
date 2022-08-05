@@ -1,71 +1,33 @@
-local Player = game.Players.LocalPlayer
-local character = Player.Character
-local humanoid = character:FindFirstChild("Humanoid")
+-- in StarterPlayerScripts
+local userInput = game:GetService("UserInputService")
+local Players = game:GetService("Players")
 
-local ContextActionService = game:GetService("ContextActionService")
+local sprintSpeed = 26
+local walkSpeed = 16
 
-local animation = Instance.new("Animation")
-animation.AnimationId = "rbxassetid://7090276952"
-animation.Parent = humanoid
-loadedAnimation = humanoid:LoadAnimation(animation)
+local player = Players.LocalPlayer
 
-local UserInputService = game:GetService("UserInputService")
-
--- Shift keys
-local walkKeyL = Enum.KeyCode.Z
-local walkKeyR = Enum.KeyCode.Up
-
--- Return whether left or right shift keys are down
-local isWalkKeyPressed
-local function IsWalkKeyDown()
-	if UserInputService:IsKeyDown( Enum.KeyCode.Z) or UserInputService:IsKeyDown( Enum.KeyCode.Up) then
-		isWalkKeyPressed = true
-	else
-		isWalkKeyPressed = false
-	end
-end
-
--- ********** --
-
-local isM
-local function isPlayerMoving()
-	if humanoid.MoveDirection.Magnitude > 0 then -- Are we walking?
-		isM = true
-	else
-		isM = false
-
-	end
-end
-
--- ChangeWalkspeed
-local function ChangeWalkspeed(walkspeed)
-	if character ~= nil then
-		if humanoid ~= nil then
-			isPlayerMoving()
-			IsWalkKeyDown()
-			print(isWalkKeyPressed)
-			humanoid.WalkSpeed = walkspeed
-			if walkspeed > 16 and isM  then
-				loadedAnimation:Play()
-			elseif walkspeed <= 16 and isM  then	
-				loadedAnimation:Stop()
+local function beginSprint(input, gameProcessed)
+	if not gameProcessed then
+		if input.UserInputType == Enum.UserInputType.Keyboard then
+			local keycode = input.KeyCode
+			if keycode == Enum.KeyCode.LeftShift or keycode == Enum.KeyCode.RightShift then
+				player.Character.Humanoid.WalkSpeed = sprintSpeed
 			end
-		else 
-
 		end
 	end
 end
 
--- SprintHandler
-local function SprintHandler(actionName,userInputState,inputObject)
-	--this recieves parameters from contextactionservice that we could use.
-	if userInputState == Enum.UserInputState.Begin then
-		ChangeWalkspeed(30)
-	elseif userInputState == Enum.UserInputState.End then
-		ChangeWalkspeed(16)
-
+local function endSprint(input, gameProcessed)
+	if not gameProcessed then
+		if input.UserInputType == Enum.UserInputType.Keyboard then
+			local keycode = input.KeyCode
+			if keycode == Enum.KeyCode.LeftShift or keycode == Enum.KeyCode.RightShift  then
+				player.Character.Humanoid.WalkSpeed = walkSpeed
+			end
+		end
 	end
-end	
+end
 
--- Action Running
-ContextActionService:BindAction("Sprint",SprintHandler,true,Enum.KeyCode.LeftShift)
+userInput.InputBegan:Connect(beginSprint)
+userInput.InputEnded:Connect(endSprint)
