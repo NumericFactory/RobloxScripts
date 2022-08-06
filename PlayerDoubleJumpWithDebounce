@@ -1,0 +1,91 @@
+-- @Author : Fred Lossignol / NumericFactory
+-- Place this script in StarterPlayerScript
+
+local UserInputService = game:GetService("UserInputService")
+local localPlayer = game.Players.LocalPlayer
+local character
+local humanoid
+
+local canDoubleJump = false
+local hasDoubleJumped = false
+local oldPower
+local TIME_BETWEEN_JUMPS = 0.2
+local DOUBLE_JUMP_POWER_MULTIPLIER = 1.5
+
+local jumppower = 50 
+local jumpdelay = 2 
+local preperationtime = .3 
+local debounce = false
+
+
+function onJumpRequest()
+	if not character or not humanoid or not character:IsDescendantOf(workspace) or
+		humanoid:GetState() == Enum.HumanoidStateType.Dead then
+		return
+	end
+	
+	if canDoubleJump and not hasDoubleJumped then
+		hasDoubleJumped = true
+		humanoid.JumpPower = oldPower * DOUBLE_JUMP_POWER_MULTIPLIER
+		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+end
+
+local function characterAdded(newCharacter)
+	character = newCharacter
+	humanoid = newCharacter:WaitForChild("Humanoid")
+	hasDoubleJumped = false
+	canDoubleJump = false
+	oldPower = humanoid.JumpPower
+	
+	------------------------------
+	-------- DEBOUNCE ------------
+	local jump = false
+	character:WaitForChild("Humanoid").Changed:Connect(function()
+		if not jump then
+			character.Humanoid.JumpPower = 0
+		end
+	end)
+	
+	local debounce = false
+
+	UserInputService.InputBegan:Connect(function(input, isTyping)
+		if not isTyping then
+			if input.KeyCode == Enum.KeyCode.Space and not debounce then
+			
+				jump = true
+	
+				character.Humanoid.JumpPower = jumppower
+				character.Humanoid.Jump = true
+				wait(preperationtime)
+				debounce = true
+
+				wait()
+				jump = false
+				wait(jumpdelay)
+
+				debounce = false
+			end
+		end
+	end)
+	------- END DEBOUNCE ---------
+	------------------------------
+
+	humanoid.StateChanged:connect(function(old, new)
+		if new == Enum.HumanoidStateType.Landed then
+			canDoubleJump = false
+			hasDoubleJumped = false
+			humanoid.JumpPower = oldPower
+		elseif new == Enum.HumanoidStateType.Freefall then
+			wait(TIME_BETWEEN_JUMPS)
+			canDoubleJump = true
+		end
+	end)
+end
+
+if localPlayer.Character then
+	characterAdded(localPlayer.Character)
+end
+
+localPlayer.CharacterAdded:connect(characterAdded)
+UserInputService.JumpRequest:connect(onJumpRequest)
