@@ -21,12 +21,12 @@
 --   > create a new module script, name it : "HolsteringModule"
 
 -- 7 Create folder "Items" in ServerStorage, in ...
---	 > create a folder named "Accessories", and copy/paste the duplicated accessory "LanternAccessory"
+--   > create a folder named "Accessories", and copy/paste the duplicated accessory "LanternAccessory"
 --   > create a folder named "Tools", and copy/paste the tool named "lantern"
 
 -- 8 Copy/paste the following 2 scripts in : 
 --   > "RespawnHandler"
--- 	 > "HolsteringModule"
+--   > "HolsteringModule"
 
 ------------------------------------------------------
 -- FIN Instructions
