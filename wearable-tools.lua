@@ -1,7 +1,8 @@
 --@Author ; Fred Lossignol / NumericFactory
 
----------------
+------------------------------------------------------
 -- Instructions
+------------------------------------------------------
 
 -- 1 Launch Play, and copy/past your player in workspace
 
@@ -27,12 +28,16 @@
 --   > "RespawnHandler"
 -- 	 > "HolsteringModule"
 
+------------------------------------------------------
+-- FIN Instructions
+------------------------------------------------------
 
 
 
-------------------------------------------
--- RespawnHandler
-------------------------------------------
+
+------------------------------------------------------
+-- ServerScriptService / HolsterSystem/ RespawnHandler
+------------------------------------------------------
 local Players = game:GetService("Players")
 local ServerStorage = game:GetService("ServerStorage")
 	
@@ -145,9 +150,9 @@ end
 
 Players.PlayerAdded:Connect(ItemHolstering)
 
-------------------------------------------
--- Fin RespawnHandler
-------------------------------------------
+----------------------------------------------------------
+-- Fin ServerScriptService / HolsterSystem/ RespawnHandler
+----------------------------------------------------------
 
 
 
@@ -170,9 +175,10 @@ Players.PlayerAdded:Connect(ItemHolstering)
 
 
 
-------------------------------------------
--- HolsteringModule
-------------------------------------------
+---------------------------------------------------------
+-- ServerScriptService / HolsterSystem / HolsteringModule
+---------------------------------------------------------
+
 --local ServerStorage = game:GetService("ServerStorage")
 --local Items = ServerStorage.Items
 
@@ -246,9 +252,9 @@ Players.PlayerAdded:Connect(ItemHolstering)
 --return HolsterSystem
 
 
-------------------------------------------
--- Fin HolsteringModule
-------------------------------------------
+-------------------------------------------------------------
+-- FIN ServerScriptService / HolsterSystem / HolsteringModule
+-------------------------------------------------------------
 
 
 	
