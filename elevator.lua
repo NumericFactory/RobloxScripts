@@ -1,5 +1,3 @@
--- @Author : Fred Lossignol / @NumericFactory
-
 -- INSTRUCTIONS
 
 --		1 create a part and name it "BottomPart" (this part is the ground of elevator)
@@ -19,10 +17,12 @@ local stepHeightInStuds = 28 -- hauteur de l'étage (en studs)
 local elevatorWait = 3 -- attente entre les departs (en secondes)
 local soundElevatorVolume = 0.4 -- volume of sound elevator (0.4/10)
 local bipElevatorVolume = 3  -- volume of bip elevator (3/10)
+local heightOfDoors = 10 -- height of the doors elevator (in studs)
+local wichSideOfDoors = "X" -- X or Z (choose the side of doors)
 -- END CHANGE VARIABLES
 
 
--- -- create sounds
+-- -- CREATE SOUNDS
 local soundElevator = Instance.new("Sound", bottomElevatorPart)
 soundElevator.Name = "ElevatorSound"
 soundElevator.SoundId = "rbxassetid://2712429387"  --10783941882
@@ -35,8 +35,46 @@ soundElevator.Volume = 0.4
 bipElevator.Volume = 3.5
 soundElevator.RollOffMaxDistance = 100
 soundElevator.RollOffMinDistance = 10
-bipElevator.RollOffMaxDistance = 20
+bipElevator.RollOffMaxDistance = 30
 bipElevator.RollOffMinDistance = 5
+
+
+-- CREATE ELEVATOR DOORS
+local doorLeft = Instance.new("Part")
+local doorRight = Instance.new("Part")
+doorLeft.Name = "DoorLeft"
+doorRight.Name = "DoorRight"
+local elevatorPositionX = bottomElevatorPart.Position.X
+local elevatorPositionY = bottomElevatorPart.Position.Y
+local elevatorPositionZ = bottomElevatorPart.Position.Z
+
+local elevatorWidthSize = 0
+
+if wichSideOfDoors=="X" then
+	elevatorWidthSize = bottomElevatorPart.Size.X
+	doorLeft.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2,  elevatorPositionY+ heightOfDoors/2 , elevatorPositionZ+elevatorWidthSize/4)
+	doorLeft.Size = Vector3.new(0.2, heightOfDoors, elevatorWidthSize/2) 
+	doorRight.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , elevatorPositionZ-elevatorWidthSize/4)
+	doorRight.Size = Vector3.new(0.2, heightOfDoors, elevatorWidthSize/2) 
+else 
+	elevatorSize = bottomElevatorPart.Size.Z
+	doorLeft.Position = Vector3.new(elevatorPositionX, elevatorPositionY+bottomElevatorPart.Position.Y/2 , elevatorPositionZ-elevatorWidthSize/2)
+	doorLeft.Size = Vector3.new(elevatorWidthSize/2, heightOfDoors, 0.2)
+end
+
+doorLeft.Anchored = true
+doorLeft.Color = Color3.fromRGB(214, 186, 82)
+doorLeft.Material = Enum.Material.SmoothPlastic
+doorLeft.Parent = elevator
+
+doorRight.Anchored = true
+doorRight.Color = Color3.fromRGB(214, 186, 82)
+doorRight.Material = Enum.Material.SmoothPlastic
+doorRight.Parent = elevator
+
+
+
+
 
 
 ----- ELEVATOR STATE ------
@@ -79,15 +117,38 @@ local function launchElevator()
 		local positionY = bottomElevatorPart.Position.Y
 		local positionZ = bottomElevatorPart.Position.Z
 
-		soundPlay(soundElevator)	
+		elevatorPositionY = bottomElevatorPart.Position.Y
+		local doorPosLeft = doorLeft.Position.Z
+		local doorPosRight = doorRight.Position.Z
+		
+		
+		soundPlay(bipElevator)
+		-- ouverture porte gauche et droite
+		for i=1,30 do	
+			doorPosLeft = doorPosLeft+0.1
+			doorPosRight = doorPosRight-0.1
+			doorLeft.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosLeft)
+			doorRight.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2, doorPosRight)
+			wait(0.004)
+		end
+		wait(elevatorWait)
+		-- Fermeture porte gauche et droite
+		for i=1,30 do	
+			doorPosLeft = doorPosLeft-0.1
+			doorPosRight = doorPosRight+0.1
+			doorLeft.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosLeft)
+			doorRight.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosRight)
+			wait(0.004)
+		end
+		
+		
+		soundPlay(soundElevator)
 		for i=1,stepHeightInStuds*10 do	
 			positionY = positionY+0.1
 			elevator:SetPrimaryPartCFrame(CFrame.new(positionX, positionY, positionZ) ) -- move 20 studs in the y-axis from the origin and rotate 45 degrees in the y-axis
 			wait(0.002)
 		end
 		soundStop(soundElevator)
-		soundPlay(bipElevator)
-		wait(elevatorWait)
 
 		elevatorState.step = 1
 		elevatorState.isInMovement = false
@@ -101,6 +162,30 @@ local function launchElevator()
 		local positionX = bottomElevatorPart.Position.X
 		local positionY = bottomElevatorPart.Position.Y
 		local positionZ = bottomElevatorPart.Position.Z
+		
+		soundPlay(bipElevator)
+		
+		-- ouverture porte
+		elevatorPositionY = bottomElevatorPart.Position.Y
+		local doorPosLeft = doorLeft.Position.Z
+		local doorPosRight = doorRight.Position.Z
+		-- ouverture porte gauche et droite
+		for i=1,30 do	
+			doorPosLeft = doorPosLeft+0.1
+			doorPosRight = doorPosRight-0.1
+			doorLeft.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosLeft)
+			doorRight.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosRight)
+			wait(0.004)
+		end
+		wait(elevatorWait)
+		-- Fermeture porte gauche et droite
+		for i=1,30 do	
+			doorPosLeft = doorPosLeft-0.1
+			doorPosRight = doorPosRight+0.1
+			doorLeft.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosLeft)
+			doorRight.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosRight)
+			wait(0.004)
+		end
 
 		soundPlay(soundElevator)
 		for i=1,stepHeightInStuds*10 do	
@@ -109,8 +194,8 @@ local function launchElevator()
 			wait(0.002)
 		end
 		soundStop(soundElevator)
-		soundPlay(bipElevator)
-		wait(elevatorWait)
+		--soundPlay(bipElevator)
+		--wait(elevatorWait)
 
 		elevatorState.step = 0
 		elevatorState.isInMovement = false
