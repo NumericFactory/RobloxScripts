@@ -134,24 +134,20 @@ end
 ------ CODE PRINCIPAL / MAIN CODE ---------
 local function launchElevator()
 	elevatorState.isLaunched = true
-	-- ELEVATOR GO UP : from step 0 => to step 1 
+	
+	-- MONTÉE : ELEVATOR GO UP (from step 0 => to step 1) 
 	if (elevatorState.isInMovement == false and elevatorState.step==0) then
-
 		elevatorState.isInMovement = true
-
 		local positionX = bottomElevatorPart.Position.X
 		local positionY = bottomElevatorPart.Position.Y
 		local positionZ = bottomElevatorPart.Position.Z
-
 		elevatorPositionY = bottomElevatorPart.Position.Y
 		local doorPosLeft = doorLeft.Position.Z
 		local doorPosRight = doorRight.Position.Z
-		
-		
+		--> Ouverture/Fermeture des portes
 		soundPlay(bipElevator)
 		openCloseDoors()
-		
-		
+		--> Démarrage de l'ascenseur
 		soundPlay(soundElevator)
 		for i=1,stepHeightInStuds*10 do	
 			positionY = positionY+0.1
@@ -159,23 +155,22 @@ local function launchElevator()
 			wait(0.002)
 		end
 		soundStop(soundElevator)
-
+		--> Nouvel état de l'ascenseur
 		elevatorState.step = 1
 		elevatorState.isInMovement = false
 	end
 	
 	
-	-- ELEVATOR GO DOWN : from step 1 => to step 0 
+	-- DESCENTE / ELEVATOR GO DOWN (from step 1 => to step 0)
 	if (elevatorState.isInMovement == false and elevatorState.step==1) then
 		elevatorState.isInMovement = true
-
 		local positionX = bottomElevatorPart.Position.X
 		local positionY = bottomElevatorPart.Position.Y
 		local positionZ = bottomElevatorPart.Position.Z
-		
+		--> Ouverture/Fermeture des portes
 		soundPlay(bipElevator)
 		openCloseDoors()
-
+		--> Démarrage de l'ascenseur
 		soundPlay(soundElevator)
 		for i=1,stepHeightInStuds*10 do	
 			positionY = positionY-0.1
@@ -183,14 +178,12 @@ local function launchElevator()
 			wait(0.002)
 		end
 		soundStop(soundElevator)
-		--soundPlay(bipElevator)
-		--wait(elevatorWait)
-
+		--> Nouvel état de l'ascenseur
 		elevatorState.step = 0
 		elevatorState.isInMovement = false
-		-- relaunch elevator
-		launchElevator()
 		
+		-- relaunch elevator
+		launchElevator()	
 	end
 end
 
