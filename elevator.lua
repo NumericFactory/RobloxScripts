@@ -17,8 +17,11 @@ local stepHeightInStuds = 28 -- hauteur de l'étage (en studs)
 local elevatorWait = 3 -- attente entre les departs (en secondes)
 local soundElevatorVolume = 0.4 -- volume of sound elevator (0.4/10)
 local bipElevatorVolume = 3  -- volume of bip elevator (3/10)
-local heightOfDoors = 10 -- height of the doors elevator (in studs)
+local heightOfDoors = 11 -- height of the doors elevator (in studs)
+local colorOfDoors = Color3.fromRGB(255, 255, 127) -- couleur des portes de l'ascenseur
+local materialOfDoors = Enum.Material.SmoothPlastic
 local wichSideOfDoors = "X" -- X or Z (choose the side of doors)
+local openDoorsRange = 50 -- largeur d'ouverture des portes en % de la largeur
 -- END CHANGE VARIABLES
 
 
@@ -30,13 +33,14 @@ soundElevator.SoundId = "rbxassetid://2712429387"  --10783941882
 local bipElevator = Instance.new("Sound", bottomElevatorPart)
 bipElevator.Name = "ElevatorBip"
 bipElevator.SoundId = "rbxassetid://2478450878"  --10783937128
-local soundState = "stopped"
+
 soundElevator.Volume = 0.4
 bipElevator.Volume = 3.5
 soundElevator.RollOffMaxDistance = 100
 soundElevator.RollOffMinDistance = 10
 bipElevator.RollOffMaxDistance = 30
 bipElevator.RollOffMinDistance = 5
+local soundState = "stopped"
 
 
 -- CREATE ELEVATOR DOORS
@@ -63,16 +67,14 @@ else
 end
 
 doorLeft.Anchored = true
-doorLeft.Color = Color3.fromRGB(214, 186, 82)
-doorLeft.Material = Enum.Material.SmoothPlastic
+doorLeft.Color = colorOfDoors
+doorLeft.Material = materialOfDoors
 doorLeft.Parent = elevator
 
 doorRight.Anchored = true
-doorRight.Color = Color3.fromRGB(214, 186, 82)
-doorRight.Material = Enum.Material.SmoothPlastic
+doorRight.Color = colorOfDoors
+doorRight.Material = materialOfDoors
 doorRight.Parent = elevator
-
-
 
 
 
@@ -97,11 +99,35 @@ local function soundPlay(sound)
 	end
 end
 
-
 local function soundStop(sound)
 	sound:Stop()
 end
 ------ END SOUNDS FUNCTIONS ---------
+
+
+-----  OPEN/CLOSE DOORS FUNCTION
+local function openCloseDoors()
+	elevatorPositionY = bottomElevatorPart.Position.Y
+	local doorPosLeft = doorLeft.Position.Z
+	local doorPosRight = doorRight.Position.Z
+	-- ouverture porte gauche et droite
+	for i=1,openDoorsRange/2 do	
+		doorPosLeft = doorPosLeft+0.1
+		doorPosRight = doorPosRight-0.1
+		doorLeft.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosLeft)
+		doorRight.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2, doorPosRight)
+		wait(0.004)
+	end
+	wait(elevatorWait)
+	-- Fermeture porte gauche et droite
+	for i=1,openDoorsRange/2 do	
+		doorPosLeft = doorPosLeft-0.1
+		doorPosRight = doorPosRight+0.1
+		doorLeft.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosLeft)
+		doorRight.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosRight)
+		wait(0.004)
+	end	
+end
 
 
 
@@ -123,23 +149,7 @@ local function launchElevator()
 		
 		
 		soundPlay(bipElevator)
-		-- ouverture porte gauche et droite
-		for i=1,30 do	
-			doorPosLeft = doorPosLeft+0.1
-			doorPosRight = doorPosRight-0.1
-			doorLeft.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosLeft)
-			doorRight.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2, doorPosRight)
-			wait(0.004)
-		end
-		wait(elevatorWait)
-		-- Fermeture porte gauche et droite
-		for i=1,30 do	
-			doorPosLeft = doorPosLeft-0.1
-			doorPosRight = doorPosRight+0.1
-			doorLeft.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosLeft)
-			doorRight.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosRight)
-			wait(0.004)
-		end
+		openCloseDoors()
 		
 		
 		soundPlay(soundElevator)
@@ -164,28 +174,7 @@ local function launchElevator()
 		local positionZ = bottomElevatorPart.Position.Z
 		
 		soundPlay(bipElevator)
-		
-		-- ouverture porte
-		elevatorPositionY = bottomElevatorPart.Position.Y
-		local doorPosLeft = doorLeft.Position.Z
-		local doorPosRight = doorRight.Position.Z
-		-- ouverture porte gauche et droite
-		for i=1,30 do	
-			doorPosLeft = doorPosLeft+0.1
-			doorPosRight = doorPosRight-0.1
-			doorLeft.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosLeft)
-			doorRight.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosRight)
-			wait(0.004)
-		end
-		wait(elevatorWait)
-		-- Fermeture porte gauche et droite
-		for i=1,30 do	
-			doorPosLeft = doorPosLeft-0.1
-			doorPosRight = doorPosRight+0.1
-			doorLeft.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosLeft)
-			doorRight.Position = Vector3.new(elevatorPositionX+elevatorWidthSize/2, elevatorPositionY+ heightOfDoors/2 , doorPosRight)
-			wait(0.004)
-		end
+		openCloseDoors()
 
 		soundPlay(soundElevator)
 		for i=1,stepHeightInStuds*10 do	
