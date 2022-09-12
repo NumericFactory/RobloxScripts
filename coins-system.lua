@@ -2,8 +2,8 @@
 -- Instructions : follow the 3 steps to create a coin system
 
 -----------------------------------------------------------------------
--- STEP 1 : in ServerScriptService, create a script, 
---          name it LeaderStatsScript, and copy/past the following code
+-- STEP 1 : in ServerScriptService, create a script and name it LeaderStatsScript, 
+--	    Then, copy/past the following code in this script file
 -----------------------------------------------------------------------
 local function onPlayerJoin(player)
 	local leaderstats = Instance.new("Folder")
@@ -16,13 +16,16 @@ local function onPlayerJoin(player)
 end
 
 game.Players.PlayerAdded:Connect(onPlayerJoin)
+----------------------------------- end STEP 1
+
+
 
 
 
 --------------------------------------------------------------------------------
 -- STEP 2: in workspace, create a folder, name it "coins"
---         in this folder, create a part (or import mesh) and name it "MarioCoin", 
---         create a new script in this part, and copy/paste thid following code
+--         in this folder "coins", create a part (or import mesh) and name it "MarioCoin", 
+--         Then, create a new script in this part, and copy/paste thid following code
 --------------------------------------------------------------------------------
 -- Tween the position of a part when it's touched, then destroy it
 local TweenService = game:GetService("TweenService")
@@ -86,6 +89,7 @@ local function collectCoin(otherPart)
 end
 
 coin.Touched:Connect(collectCoin)
+---------------------- end STEP 2
 
 
 
@@ -123,7 +127,4 @@ end
 for i=1,density do
 	local newCoin = simpleSpawnCoin()
 end
-
-
-
-
+------ end STEP 3
