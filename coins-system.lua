@@ -82,6 +82,7 @@ local function collectCoin(otherPart)
 				-- On tween completion, destroy object
 				tweenObject.Completed:Connect(function()
 					coin:Destroy()
+					sound:Destroy()
 				end)
 			end
 		end
