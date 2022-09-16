@@ -1,7 +1,7 @@
 -- @Author : Fred Lossignol / NumericFactory
 -- Instructions : 
 -- 1 > create a door part, add a proximity prompt
--- 2 > add a script in doot part, and copy/past this code 
+-- 2 > add a script in door part, and copy/past this code 
 
 local Door = script.Parent
 local startCFrame = Door.CFrame
