@@ -4,6 +4,7 @@
 -- IMPORTATIONS SERVICES et data
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local jaugePowerEvent = ReplicatedStorage.jaugePowerEvent --fire
+local PlayerIsEquippedEvent = ReplicatedStorage.PlayerIsEquippedEvent --fire
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local hrp = player.CharacterAdded:Wait():WaitForChild("HumanoidRootPart");
@@ -96,6 +97,7 @@ local ANIMATION_TIME_ARM = 1               	-- temps de l'animation quand le pla
 function PlayerIsEquipped() 
 	-- jouer l'animation 
 	print("J'ai la BALLE ")
+	PlayerIsEquippedEvent:Fire(true)
 	playerIsArmingBall = false
 	wait()
 	local Character = Ball.Parent
@@ -257,6 +259,8 @@ end
 -----------------------------------------------------------------
 function PlayerIsUnequipped()
 	-- when player is unequipped : stop all animations with ball
+	playerIsArmingBall = false
+	PlayerIsEquippedEvent:Fire(false)
 	animationIdleTrack:Stop()
 	animationArmBallTrack:Stop()
 	animationLaunchTrack:Stop()
