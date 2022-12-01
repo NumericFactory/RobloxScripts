@@ -1,7 +1,9 @@
 -- under a tool, create a LocalScript and copy/paste this script
---@Author : Fred Lossignol / NumericFactory
+-- @Author : Fred Lossignol / NumericFactory
 
 -- IMPORTATIONS SERVICES et data
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local jaugePowerEvent = ReplicatedStorage.jaugePowerEvent --fire
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local hrp = player.CharacterAdded:Wait():WaitForChild("HumanoidRootPart");
@@ -12,6 +14,7 @@ local Ball = script.Parent
 local playerIsArmingBall = false 
 local inputBeganEvent -- register event when mouse is clicked in a variable
 local inputEndedEvent -- register event when mouse is clicked in a variable
+local powerJauge -- number 0-100
 
 -----------------------
 -- LISTE DES ANIMATIONS
@@ -39,6 +42,30 @@ local function playAnimationForDuration(animationTrack, duration)
 	animationTrack:Play()
 	animationTrack:AdjustSpeed(speed)
 end
+
+-- JaugePowerUp function
+local function jaugePowerUp()
+	-- upt 0 to 100 in 1 second
+	for i=20,100,4  do
+		powerJauge = i
+		jaugePowerEvent:Fire(i)
+		--print("power" .. powerJauge)
+		wait(0.05)
+		if playerIsArmingBall == false then
+			break
+		end
+	end	
+end
+
+-- JaugePowerDown function
+local function jaugePowerDown()
+	-- upt 0 to 100 in 1 second
+	local waitTime = powerJauge * 0.3 /100
+	for i=powerJauge,0,1  do
+		powerJauge = i
+		print("power" .. powerJauge)
+	end	
+end
 -- Fin fonctions utiles
 
 
@@ -46,7 +73,7 @@ end
 -- YOU CAN CHANGE VARIABLES HERE
 --------------------------------
 -- (customize properties of animations, distance & speed player can launch the ball,...)
-local BALL_DISTANCE_PLAYER_CAN_LAUNCH = 50 	-- distance in studs
+local BALL_DISTANCE_PLAYER_CAN_LAUNCH = 125 	-- distance in studs
 local BALL_TIME_TO_GOAL = 1.5 				-- time in seconds (greater number make the ball more slowly)
 local ANIMATION_TIME_ARM = 1               	-- temps de l'animation quand le player arme son tir (en secondes)
 --------------------------------
@@ -92,8 +119,14 @@ function PlayerIsEquipped()
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			playerIsArmingBall = not playerIsArmingBall
 			if playerIsArmingBall then
+				
 				-- PLAY PLAYER ANIMATION ARM BALL
 				print("j'arme mon tir")
+				coroutine.wrap(function()
+					-- this will run independently
+					jaugePowerUp()
+				end)()
+				
 				animationLaunchTrack:Stop()
 				playAnimationForDuration(animationArmBallTrack, ANIMATION_TIME_ARM) -- jouer l'animation (avec une durée 1 seconde)
 				wait(ANIMATION_TIME_ARM - 0.05) -- (l'animation dure 1 seconde, on la stoppe juste avant : 0.99s)
@@ -110,6 +143,7 @@ function PlayerIsEquipped()
 			-- PLAY PLAYER ANIMATION SHOOT BALL
 			playerIsArmingBall = false
 			print("Je lance la balle ! ")
+		
 			animationArmBallTrack:Stop()
 			wait()
 			playAnimationForDuration(animationLaunchTrack, 0.3) -- jouer l'animation (avec une durée 0.3 seconde)
@@ -127,13 +161,13 @@ function PlayerIsEquipped()
 			
 			-- 1 get the player position
 			local position  = (player.Character.HumanoidRootPart.CFrame.Position) -- player position
-			print("position")
-			print(position)
+			--print("position")
+			--print(position)
 			
 			-- 2  get a raycast direction vector / un rayon pour la direction en face du regard du joueur + 55 studs de distance
-			local RaycastDirection = player.Character.HumanoidRootPart.CFrame.LookVector * BALL_DISTANCE_PLAYER_CAN_LAUNCH
-			print("raycast direction")
-			print(RaycastDirection)
+			local RaycastDirection = player.Character.HumanoidRootPart.CFrame.LookVector * BALL_DISTANCE_PLAYER_CAN_LAUNCH * powerJauge / 100
+			--print("raycast direction")
+			--print(RaycastDirection)
 			
 			-- 3  compute position point for the ball at the end of animation / calculer la position du point qu'atteindra la balle (à partir de la position du joueur)
 			local properties = {
@@ -194,6 +228,11 @@ function PlayerIsEquipped()
 			-- 7 play ball animation from player position -> to point
 			local tween = tw:Create(newBall, tweenInfo, properties)
 			tween:Play()
+			powerJauge = 20
+			jaugePowerEvent:Fire(powerJauge)
+			--print("power" .. powerJauge)
+			
+			
 			-- (and disappear ball in workspace after delay)
 			game.Debris:AddItem(newBall,BALL_TIME_TO_GOAL+0.5) -- si la balle met 1seconde à arriver au but, elle mettre 1.5s à disparaitre du workspace
 			
@@ -233,7 +272,3 @@ end
 Ball.Equipped:Connect(PlayerIsEquipped)
 Ball.Unequipped:Connect(PlayerIsUnequipped)
 --Ball.Activated:Connect(Activated)
-
-
-
-
