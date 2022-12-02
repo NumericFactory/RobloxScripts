@@ -34,6 +34,19 @@ local animationArmBallTrack
 local animationLaunchTrack
 -- FIN LISTE DES ANIMATIONS
 
+
+--------------------------------
+-- YOU CAN CHANGE VARIABLES HERE
+--------------------------------
+-- (customize properties of animations, distance & speed player can launch the ball,...)
+local BALL_DISTANCE_PLAYER_CAN_LAUNCH = 100	-- distance in studs
+local MAX_SPEED_BALL = 125 					-- speed max of the ball if 100% jauge power
+local BALL_TIME_TO_GOAL = 1.5				-- time in seconds (greater number make the ball more slowly)
+local ANIMATION_TIME_ARM = 1				-- temps de l'animation quand le player arme son tir (en secondes)
+--------------------------------
+-- Fin Custom variables
+
+
 -------------------
 -- FONCTIONS UTILES
 -------------------
@@ -47,38 +60,19 @@ end
 -- JaugePowerUp function
 local function jaugePowerUp()
 	-- upt 0 to 100 in 1 second
-	for i=20,100,4  do
+	for i=20,100,5  do
 		powerJauge = i
 		jaugePowerEvent:Fire(i)
 		--print("power" .. powerJauge)
-		wait(0.05)
+		wait(ANIMATION_TIME_ARM/16)
 		if playerIsArmingBall == false then
 			break
 		end
 	end	
 end
-
--- JaugePowerDown function
-local function jaugePowerDown()
-	-- upt 0 to 100 in 1 second
-	local waitTime = powerJauge * 0.3 /100
-	for i=powerJauge,0,1  do
-		powerJauge = i
-		print("power" .. powerJauge)
-	end	
-end
 -- Fin fonctions utiles
 
 
---------------------------------
--- YOU CAN CHANGE VARIABLES HERE
---------------------------------
--- (customize properties of animations, distance & speed player can launch the ball,...)
-local BALL_DISTANCE_PLAYER_CAN_LAUNCH = 125 	-- distance in studs
-local BALL_TIME_TO_GOAL = 1.5 				-- time in seconds (greater number make the ball more slowly)
-local ANIMATION_TIME_ARM = 1               	-- temps de l'animation quand le player arme son tir (en secondes)
---------------------------------
--- Fin Custom variables
 
 
 --*******************************************
@@ -153,33 +147,35 @@ function PlayerIsEquipped()
 			------------------------
 			--TIR - FRED SOLUTION --
 			-- 1 get the player position
-			-- 2 get a raycast direction vector
+			-- 2 get a raycast direction vector and get the speed of the ball
 			-- 3 compute position point for the ball at the end of animation
 			-- 4 prepare params for animation
 			-- 5 RayCast to determine if ball hit a part (human or decor) and stop the animation
 			-- 6 create newBall in workspace and give properties to this ball
-			-- 7 
+			-- 7 Animate
 			------------------------
 			
 			-- 1 get the player position
-			local position  = (player.Character.HumanoidRootPart.CFrame.Position) -- player position
+			--local position  = (player.Character.HumanoidRootPart.CFrame.Position) -- player position
+			local position = Ball.Handle.Position
 			--print("position")
 			--print(position)
 			
 			-- 2  get a raycast direction vector / un rayon pour la direction en face du regard du joueur + 55 studs de distance
 			local RaycastDirection = player.Character.HumanoidRootPart.CFrame.LookVector * BALL_DISTANCE_PLAYER_CAN_LAUNCH * powerJauge / 100
+			local ballSpeed = MAX_SPEED_BALL * powerJauge / 100
 			--print("raycast direction")
 			--print(RaycastDirection)
 			
 			-- 3  compute position point for the ball at the end of animation / calculer la position du point qu'atteindra la balle (à partir de la position du joueur)
 			local properties = {
-				Position = position + Vector3.new(RaycastDirection.X-1, RaycastDirection.Y+2.3, RaycastDirection.Z)
+				Position = position + Vector3.new(RaycastDirection.X, RaycastDirection.Y-1, RaycastDirection.Z)
 			}
 			
 			-- 4 prepare params for animation / préparer les paramètres de l'animation de la balle
 			local tweenInfo = TweenInfo.new(
-				BALL_TIME_TO_GOAL, --time it takes to run
-				Enum.EasingStyle.Quart, -- style of twwen
+				BALL_DISTANCE_PLAYER_CAN_LAUNCH/MAX_SPEED_BALL, --time it takes to run
+				Enum.EasingStyle.Linear, -- style of twwen
 				Enum.EasingDirection.Out -- direction of Tween
 				-- -1, -- repeat
 				--true, -- tween reverse
@@ -196,17 +192,27 @@ function PlayerIsEquipped()
 			raycastParams.FilterDescendantsInstances = {player.Character.HumanoidRootPart.Parent}
 			raycastParams.IgnoreWater = true
 			-- 5.2 Cast the ray
-			local raycastResult = workspace:Raycast(position, Vector3.new(RaycastDirection.X, RaycastDirection.Y+3, RaycastDirection.Z), raycastParams)
+			local raycastResult = workspace:Raycast(position, Vector3.new(RaycastDirection.X, RaycastDirection.Y-2, RaycastDirection.Z), raycastParams)
 			-- 5.3 Interpret the result
 			if RaycastDirection then
 				if(raycastResult and raycastResult.Instance:isA("Part") and raycastResult.Instance.CanCollide==true)  then
 					--print("raycastresult position")
 					--print(raycastResult.Position)
-					local distance = raycastResult.Position.Z - position.Z - 12
+					local distance = raycastResult.Distance
 					properties.Position = raycastResult.Position
+					--ballSpeed = (BALL_DISTANCE_PLAYER_CAN_LAUNCH * powerJauge / 100) / BALL_TIME_TO_GOAL -- 125/1.5 = 83m/s
+					print("******")
+					print("******")
+					print("******")
+					print("power : ".. powerJauge)
+					print("distance : " .. distance .. "m")
+					print("vitesse : " .. ballSpeed .. "m/s")
+					print("temps trajet balle : " .. distance/ballSpeed .. "seconds")
+					print("*********************")
+					print("part touchée : " ..  raycastResult.Instance.Name )
 					tweenInfo =  TweenInfo.new(
-						distance/BALL_DISTANCE_PLAYER_CAN_LAUNCH * BALL_TIME_TO_GOAL, --time it takes to run
-						Enum.EasingStyle.Quad, -- style of twwen
+						distance/ballSpeed, --time it takes to run (125m/1.5s = 83m/s)+
+						Enum.EasingStyle.Linear, -- style of twwen
 						Enum.EasingDirection.Out -- direction of Tween
 						-- -1, -- repeat
 						--true, -- tween reverse
@@ -223,8 +229,13 @@ function PlayerIsEquipped()
 			newBall.Size = Vector3.new(1.7, 1.7, 1.7)
 			newBall.Color = Color3.new(117, 0, 0)
 			newBall.CanCollide = true
-			newBall.Position = position + Vector3.new(0,2, 2) --
+			newBall.Position = position + Vector3.new(0,0, 1) --
 			newBall.Parent = workspace
+			newBall.Touched:Connect(function(otherPart)
+				if otherPart.Parent.Name == "Tree" then
+					newBall.Color = Color3.new(0.941176, 0.0941176, 1)
+				end
+			end)
 			--controls:Disable()
 			
 			-- 7 play ball animation from player position -> to point
