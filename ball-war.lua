@@ -8,14 +8,19 @@ local PlayerIsEquippedEvent = ReplicatedStorage.PlayerIsEquippedEvent --fire
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local hrp = player.CharacterAdded:Wait():WaitForChild("HumanoidRootPart");
+
 local mouse = player:GetMouse();
 local UIP = game:GetService("UserInputService")
+--rayResult(mousePos.X, mousePos.Y)
+
 local tw = game:GetService("TweenService")
 local Ball = script.Parent
 local playerIsArmingBall = false 
 local inputBeganEvent -- register event when mouse is clicked in a variable
 local inputEndedEvent -- register event when mouse is clicked in a variable
 local powerJauge -- number 0-100
+
+
 
 -----------------------
 -- LISTE DES ANIMATIONS
@@ -39,8 +44,9 @@ local animationLaunchTrack
 -- YOU CAN CHANGE VARIABLES HERE
 --------------------------------
 -- (customize properties of animations, distance & speed player can launch the ball,...)
-local BALL_DISTANCE_PLAYER_CAN_LAUNCH = 100	-- distance in studs
-local MAX_SPEED_BALL = 125 					-- speed max of the ball if 100% jauge power
+local MAX_MOUSE_DISTANCE = 1000
+local BALL_DISTANCE_PLAYER_CAN_LAUNCH = 125	-- distance in studs
+local MAX_SPEED_BALL = 150 					-- speed max of the ball if 100% jauge power
 local BALL_TIME_TO_GOAL = 1.5				-- time in seconds (greater number make the ball more slowly)
 local ANIMATION_TIME_ARM = 1				-- temps de l'animation quand le player arme son tir (en secondes)
 --------------------------------
@@ -70,9 +76,29 @@ local function jaugePowerUp()
 		end
 	end	
 end
+-- https://create.roblox.com/docs/tutorials/scripting/intermediate-scripting/hit-detection-with-lasers
+local function getWorldMousePosition()
+	local mouseLocation = UIP:GetMouseLocation()
+	-- Create a ray from the 2D mouseLocation
+	local screenToWorldRay = workspace.CurrentCamera:ViewportPointToRay(mouseLocation.X, mouseLocation.Y)
+	-- The unit direction vector of the ray multiplied by a maximum distance
+	local directionVector = screenToWorldRay.Direction * MAX_MOUSE_DISTANCE
+	-- Raycast from the ray's origin towards its direction
+	local raycastResult = workspace:Raycast(screenToWorldRay.Origin, directionVector)
+	if raycastResult then
+		-- Return the 3D point of intersection
+		return raycastResult.Position
+	else
+		-- No object was hit so calculate the position at the end of the ray
+		return screenToWorldRay.Origin + directionVector
+	end
+end
 -- Fin fonctions utiles
 
-
+mouse.Move:Connect(function()
+	local theplace = player.Character.Torso.CFrame:toObjectSpace(mouse.Hit).lookVector
+	local value1 = CFrame.new(0,1.025,0) * CFrame.Angles(math.tan   (theplace.Y)+math.rad(-90),0,math.acos   (theplace.X)+math.rad(90))
+end)
 
 
 --*******************************************
@@ -91,6 +117,10 @@ end
 function PlayerIsEquipped() 
 	-- jouer l'animation 
 	print("J'ai la BALLE ")
+	--UIP.MouseIconEnabled = true
+	mouse.Icon = "rbxassetid://2151638245" 
+	-- 3400146391 (classic) / 11232270732 (target circle white) / 358650765 (target crosshair pink) / 7527551515 (target purple neon)
+	
 	PlayerIsEquippedEvent:Fire(true)
 	playerIsArmingBall = false
 	wait()
@@ -115,7 +145,7 @@ function PlayerIsEquipped()
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			playerIsArmingBall = not playerIsArmingBall
 			if playerIsArmingBall then
-				
+				Ball.Ball.Transparency = 0
 				-- PLAY PLAYER ANIMATION ARM BALL
 				print("j'arme mon tir")
 				coroutine.wrap(function()
@@ -134,8 +164,9 @@ function PlayerIsEquipped()
 	
 	-- ADD EVENT LISTENER UNCLICK MOUSE1 BUTTON (click relâché)
 	inputEndedEvent = UIP.InputEnded:Connect(function(input)
+		
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
-			
+			Ball.Ball.Transparency = 1
 			-- PLAY PLAYER ANIMATION SHOOT BALL
 			playerIsArmingBall = false
 			print("Je lance la balle ! ")
@@ -146,7 +177,7 @@ function PlayerIsEquipped()
 			
 			------------------------
 			--TIR - FRED SOLUTION --
-			-- 1 get the player position
+			-- 1 get the player position / or get the mouseLocation
 			-- 2 get a raycast direction vector and get the speed of the ball
 			-- 3 compute position point for the ball at the end of animation
 			-- 4 prepare params for animation
@@ -155,14 +186,30 @@ function PlayerIsEquipped()
 			-- 7 Animate
 			------------------------
 			
+			
+			local mouseLocation = getWorldMousePosition()
+			-- Calculate a normalised direction vector and multiply by laser distance
+			local targetDirection = (mouseLocation - Ball.Handle.Position).Unit
+
+			-- The direction to fire the weapon multiplied by a maximum distance
+			local RaycastDirection = targetDirection * BALL_DISTANCE_PLAYER_CAN_LAUNCH * powerJauge / 100
+
+			-- Ignore the player's character to prevent them from damaging themselves
+			--local weaponRaycastParams = RaycastParams.new()
+			--weaponRaycastParams.FilterDescendantsInstances = {Players.LocalPlayer.Character}
+			--local weaponRaycastResult = workspace:Raycast(Ball.Handle.Position, directionVector, weaponRaycastParams)
+			
+			
+			--***************************--
+			
 			-- 1 get the player position
-			--local position  = (player.Character.HumanoidRootPart.CFrame.Position) -- player position
+			-- local position  = (player.Character.HumanoidRootPart.CFrame.Position) -- player position
 			local position = Ball.Handle.Position
-			--print("position")
-			--print(position)
+			
 			
 			-- 2  get a raycast direction vector / un rayon pour la direction en face du regard du joueur + 55 studs de distance
-			local RaycastDirection = player.Character.HumanoidRootPart.CFrame.LookVector * BALL_DISTANCE_PLAYER_CAN_LAUNCH * powerJauge / 100
+			-- local RaycastDirection = player.Character.HumanoidRootPart.CFrame.LookVector * BALL_DISTANCE_PLAYER_CAN_LAUNCH * powerJauge / 100
+			
 			local ballSpeed = MAX_SPEED_BALL * powerJauge / 100
 			--print("raycast direction")
 			--print(RaycastDirection)
@@ -231,15 +278,17 @@ function PlayerIsEquipped()
 			newBall.CanCollide = true
 			newBall.Position = position + Vector3.new(0,0, 1) --
 			newBall.Parent = workspace
-			newBall.Touched:Connect(function(otherPart)
-				if otherPart.Parent.Name == "Tree" then
-					newBall.Color = Color3.new(0.941176, 0.0941176, 1)
-				end
-			end)
+			
 			--controls:Disable()
 			
 			-- 7 play ball animation from player position -> to point
 			local tween = tw:Create(newBall, tweenInfo, properties)
+			newBall.Touched:Connect(function(otherPart)
+				if otherPart.Parent.Name == "Tree" then
+					newBall.Color = Color3.new(0.941176, 0.0941176, 1)
+					tween:Pause()
+				end
+			end)
 			tween:Play()
 			powerJauge = 20
 			jaugePowerEvent:Fire(powerJauge)
@@ -270,6 +319,7 @@ end
 -----------------------------------------------------------------
 function PlayerIsUnequipped()
 	-- when player is unequipped : stop all animations with ball
+	mouse.Icon =""
 	playerIsArmingBall = false
 	PlayerIsEquippedEvent:Fire(false)
 	animationIdleTrack:Stop()
