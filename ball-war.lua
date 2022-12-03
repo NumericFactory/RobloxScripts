@@ -46,9 +46,9 @@ local animationLaunchTrack
 -- (customize properties of animations, distance & speed player can launch the ball,...)
 local MAX_MOUSE_DISTANCE = 1000
 local BALL_DISTANCE_PLAYER_CAN_LAUNCH = 125	-- distance in studs
-local MAX_SPEED_BALL = 150 					-- speed max of the ball if 100% jauge power
-local BALL_TIME_TO_GOAL = 1.5				-- time in seconds (greater number make the ball more slowly)
-local ANIMATION_TIME_ARM = 1				-- temps de l'animation quand le player arme son tir (en secondes)
+local MAX_SPEED_BALL = 150 			-- speed max of the ball if 100% jauge power
+local BALL_TIME_TO_GOAL = 1.5			-- time in seconds (greater number make the ball more slowly)
+local ANIMATION_TIME_ARM = 1			-- temps de l'animation quand le player arme son tir (en secondes)
 --------------------------------
 -- Fin Custom variables
 
