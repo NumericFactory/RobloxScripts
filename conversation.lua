@@ -1,3 +1,6 @@
+-- create a script under a part or a dummy
+-- copy/paste this script
+
 local Players = game:GetService("Players")
 isOpened = false
 local ia = script.Parent
