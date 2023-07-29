@@ -1,7 +1,7 @@
 --@Author : Frederic Lossignol
 -- 1/ Create a ModuleScript in "ReplicatedStorage"
 -- 2/ copy/paste the script below and rename file "ConversationModuleScript"
--- 3/ Usage : > create a part or folder NPCS, add into a new NPC (or new part), and mame it "Dummy"
+-- 3/ Usage : > In workspace, create a folder NPCS, add a new NPC (or a new part), and mame it "Dummy"
 --            > (go to the end of script to see the code if you want to create a conversation on the Dummy)
 
 local isGuiConversationOpened = false
