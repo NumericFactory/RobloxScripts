@@ -379,7 +379,7 @@ local conversationStateChanged = game:GetService("ReplicatedStorage"):WaitForChi
 local customConversations = {} 
 
 -- 1/ CUSTOM : NPC OR PART
-local ia = workspace.NPCS:WaitForChild("QuestDummy2")
+local ia = workspace.NPCS:WaitForChild("Dummy")
 
 ---------------------------
 -- 2/ CUSTOM CONVERSATIONS
