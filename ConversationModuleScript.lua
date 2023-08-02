@@ -4,9 +4,17 @@
 -- 3/ Usage : > In workspace, create a folder NPCS, add a new NPC (or a new part), and mame it "Dummy"
 --            > (go to the end of script to see the code if you want to create a conversation on the Dummy)
 
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- create a remote event named conversationStateChhanged
+local conversationStateChangedEvent = Instance.new("BindableEvent")
+conversationStateChangedEvent.Name = "conversationStateChangedEvent"
+conversationStateChangedEvent.Parent = ReplicatedStorage
+
 local isGuiConversationOpened = false
 
--- LES UTILITIES
+-- UTILITIES
 -- *************
 -- role : print text in the GUI
 local function typeText(object, text)
@@ -15,13 +23,19 @@ local function typeText(object, text)
 		wait(0.03)
 	end
 end
-
-
 -- FIN UTILITIES
+
+-- ******************* CUSTOMIZE LOOK *************************************
+local textSize = 25
+local textColor = Color3.fromRGB(168, 168, 168)
+local textFont = Enum.Font.Cartoon
+local cornerImage = 'rbxassetid://' 
+-- @Info : if replace, image must be a png 32X32 and be the top right corner
+-- END CUSTOMIZE LOOK
+-- ************************************************************************
 
 
 -- class ConversationModule / public class
--- ConversationModule is exported and othe sripts can use his methods
 local ConversationModule = {}
 ConversationModule.__index = ConversationModule
 
@@ -36,19 +50,20 @@ Conversations.__index = Conversations
 
 
 -- ************************************** 
---	LES FUNCTIONS 
+--	METHODS 
 -- **************************************
 
--- function privée
+-- constuctor method for Conversations class
 function Conversations:new(ia, newTable)
 	local newConv = setmetatable({},Conversations)
+	newConv.id = ia.name 
 	newConv.name = ia.name 
 	newConv.state = 0
 	newConv.conversations = newTable
 	return newConv
 end
 
--- function public : Créer une nouvelle conversation depuis l'extérieur (un script)
+-- public constructor method : créer une nouvelle conversation depuis l'extérieur (un script ou localscript)
 function ConversationModule:new(ia, newConversations)
 	local newConv = Conversations:new(ia, newConversations)
 	return newConv
@@ -76,24 +91,15 @@ end
 function Conversations:setState(indexConversation)
 	self.state = indexConversation
 end
--- END Conversations class methods
-----------------------------------
 
+
+-- ConversationModule class methods
+-----------------------------------
 function ConversationModule:GetConversation(index)
 	--return self.conversations[index]
 	return Conversations[index]
 end
 
-
--- ************************************************************************
--- function GUIConversation
--- ******************* CUSTOMIZE LOOK *************************************
-local textSize = 25
-local textColor = Color3.fromRGB(168, 168, 168)
-local textFont = Enum.Font.Cartoon
-local cornerImage = 'rbxassetid://' 
--- @Info : if replace, image must be a png 32X32 and be the top right corner
--- END CUSTOMIZE LOOK
 
 function ConversationModule:CreateGui(iaName, player)	
 	-- create instance screen gui
@@ -204,7 +210,7 @@ function ConversationModule:CreateGui(iaName, player)
 	textBtn1.Parent = uiListLayout.Parent
 
 	local textBtn2 = Instance.new("TextButton")
-	textBtn2.Text = "Leave"
+	textBtn2.Text = "Quit"
 	textBtn2.Parent = uiListLayout
 	textBtn2.Name = "Btn2"
 	textBtn2.Size = UDim2.new(0, 200, 0, 50)
@@ -267,7 +273,6 @@ end
 local talkGUI = nil
 function Conversations:LaunchConversationGUI(ia, player)
 	--self.state -- conversationIndex
-	print(self.state)
 	self.state = self.state+1
 	if(self.state > #self.conversations) then
 		self.state = #self.conversations
@@ -275,11 +280,12 @@ function Conversations:LaunchConversationGUI(ia, player)
 	
 	local sentenceIndex = 1
 	print('state', self.state)
-	print('sentenceIndex',  sentenceIndex)
-
-	--local conversation = ConversationModule.g 
+	
+	-- emit remoteEvent for Client
+	-- For exemple, developper could use this event to manage save data in player Data
+	conversationStateChangedEvent:Fire({id=self.name, state=self.state})
+	
 	local conversation = self.conversations[self.state]
-	print('convv', conversation)
 
 	local function f() 
 		typeText(talkGUI.TalkGuiFrame.TextBox, conversation.sentences[sentenceIndex].customText)
@@ -314,8 +320,7 @@ function Conversations:LaunchConversationGUI(ia, player)
 					isGuiConversationOpened = false	
 					sentenceIndex = 1
 					conversation = self.conversations[self.state]
-				end
-				
+				end	
 			else
 				talkGUI.TalkGuiFrame.ActionsFrame.Btn1.Text = conversation.sentences[sentenceIndex].responseText	
 				t = coroutine.create(f) --Create task.
@@ -325,6 +330,7 @@ function Conversations:LaunchConversationGUI(ia, player)
 					print(coroutine.running())	
 				end
 			end
+		
 			print('state', self.state)
 			print('sentenceIndex',  sentenceIndex)
 		end)
@@ -343,9 +349,7 @@ function Conversations:LaunchConversationGUI(ia, player)
 				isGuiConversationOpened = false
 			end
 			wait(0.5)
-		end
-		
-		
+		end	
 	end
 end
 
@@ -357,58 +361,46 @@ return ConversationModule
 
 
 
+
+
+
+
+
 -----------------------------------------
+-- USAGE :
 -- In StarterPlayer, create a localScript
 -- and name it ConversationDummy
 -- and copy/paste code below
 -----------------------------------------
 -- imports
 local conversationModule = require(game:GetService("ReplicatedStorage"):WaitForChild("ConversationModuleScript"))
-
--- 1/ CUSTOMIZE : SELECT NPC 
---------------------------------------
-local ia = workspace.NPCS.Dummy
--- END CUSTOMIZE NPC
-
--- create clickDetector on NPC
-local clickDetector = Instance.new('ClickDetector')
-clickDetector.MaxActivationDistance = 10
-clickDetector.Parent = ia
+local conversationStateChanged = game:GetService("ReplicatedStorage"):WaitForChild("conversationStateChangedEvent")
 
 local customConversations = {} 
 
------------------------------
--- 2/ CUSTOMIZE CONVERSATIONS
------------------------------
+-- 1/ CUSTOM : NPC OR PART
+local ia = workspace.NPCS:WaitForChild("QuestDummy2")
+
+---------------------------
+-- 2/ CUSTOM CONVERSATIONS
+---------------------------
 
 -- conversation 1
 customConversations[1] = {
 	condition = true,
 	sentences = {
+
 		{ 
-			customText = `zzzzzzz `, 
-			actionButton = true, 
-			multiaction = true,
-			responseText = 'Hello!'
+			customText = `Hello, how are you :)`, 
+			actionButton = true,
+			responseText = 'Fine!'
 		},
 
 		{ 
-			customText = `mmm... hello, mister, i have a mission for you... ?`, 
+			customText = `Ok my name is Dummy. What's your name?  `, 
 			actionButton = true, 
-			responseText = 'I want to know!'
+			responseText = 'Fred'
 		},
-
-		{ 
-			customText = `I need a medical potion because i'm tired.`, 
-			actionButton = true, 
-			responseText = 'I would like help you',	
-		},
-		{ 
-			customText = `You have to find the magician. He will give you my potion`, 
-			actionButton = true, 
-			responseText = 'Ok, i accept the quest'
-
-		}
 	}	
 }
 
@@ -417,14 +409,15 @@ customConversations[1] = {
 customConversations[2]={
 	condition = false,
 	sentences = {
+
 		{ 
-			customText = `... Have you got my potion ?  `, 
+			customText = `... Have you got a magic potion ?  `, 
 			actionButton = true, 
 			responseText = 'Not yet'
 		},
 
 		{ 
-			customText = `So, come back when you will have my potion.`, 
+			customText = `So, go to the village buy it`, 
 			actionButton = true, 
 			responseText = 'Ok!'
 		}
@@ -435,6 +428,7 @@ customConversations[2]={
 customConversations[3]={
 	condition = false,
 	sentences = {
+
 		{ 
 			customText = `... Have you got my potion ?  `, 
 			actionButton = true, 
@@ -452,29 +446,41 @@ customConversations[3]={
 -- END CUSTOMIZE CONVERSATIONS
 ------------------------------
 
+---------------------------------------------------------------------
+-- Event fire when conversation state change
+-- Add custom instructions below if you want
+---------------------------------------------------------------------
+conversationStateChanged.Event:Connect(function(conversation) 
+	print("converstation state has changed ", conversation)  -- {id ="Dummy", state=2}
+	-- do what yout want. For exemple : save conversation state in player data
+end)
+
+
 
 --***********************************************************
--- PROGRAMM *************************************************
+-- PROGRAM *************************************************
 -- **********************************************************
+
+-- create clickDetector on NPC
+local clickDetector = Instance.new('ClickDetector')
+clickDetector.MaxActivationDistance = 10
+clickDetector.Parent = ia
+
+
 -- CREATE THE NEW CONVERSATION 
 local conv = conversationModule:new(ia, customConversations)
 
--- CREATE GUI Conversation
--- ***********************
-local talkGUI
-
+-- LAUNCH GUI
 -- ********************************************
 -- Event 'MouseClick' on NPC or PART 
-
 -- role : when player click on NPC 
 -- 		  OPEN talkGUI AND LAUNCH CONVERSATION
 -- ********************************************
 clickDetector.MouseClick:Connect(function(player)
-	-- launch conversation
-	conv:LaunchConversationGUI(ia, player)
-
+	conv:LaunchConversationGUI(ia, player) -- conversation GUI
 end)
 
+-- on mouse over the NPC or PART, highlight it
 local Highlight
 clickDetector.MouseHoverEnter:Connect(function(player)
 	Highlight = Instance.new ("Highlight")
@@ -483,14 +489,10 @@ clickDetector.MouseHoverEnter:Connect(function(player)
 	--	addQuestToGUI:FireClient(player, questFound, parentName)
 end)
 
-
+-- on mouse out the NPC or PART, destroy highlight
 clickDetector.MouseHoverLeave:Connect(function(player)
 	Highlight:Destroy()
 end)
 --***********************************************************
 -- END PROGRAMM *********************************************
 -- **********************************************************
-
-
-
-
