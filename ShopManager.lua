@@ -14,9 +14,9 @@
 ---- StarterGui
 ---- └── LobbyGui        -- déjà fait (il contient les boutons shop et inventory)
 ---- └── ShopGui         --  (nouveau Gui) 
----- └── ShopFrame       --  (à créer sans propriété car géré par le code) 
+----     └── ShopFrame       --  (à créer sans propriété car géré par le code) 
 ---- └── InventoryGui    --  (nouveau Gui) 
----- └── InventoryFrame  --  (à créer sans propriété car géré par le code) 
+----     └── InventoryFrame  --  (à créer sans propriété car géré par le code) 
 
 
 
