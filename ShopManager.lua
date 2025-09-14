@@ -364,26 +364,24 @@ end)
 --******* ORGANISATION FINALE DU JEU (optionnel et à voir selon votre structure) **********
 --******************************************************************************************
 
-ServerScriptService
-- MoneyScript (ou ton script actuel qui gère la monnaie)
-- ShopManager (le script complet serveur qui est donné +haut)
+-- ServerScriptService
+-- * MoneyScript (ou ton script actuel qui gère la monnaie)
+-- * ShopManager (le script complet serveur qui est donné +haut)
 
-ReplicatedStorage
-- MoneyEvent (remoteEvent)
-- BuyItem (remoteEvent)
-- GetShop (remoteFunction)
-- GetInventory (remoteFunction)
-- InventoryUpdated 
+-- ReplicatedStorage
+-- * MoneyEvent (remoteEvent)
+-- * BuyItem (remoteEvent)
+-- * GetShop (remoteFunction)
+-- * GetInventory (remoteFunction)
+-- * InventoryUpdated 
 
-StarterGui
-- ScreenGui
---- ShopButton
-- InventoryButton
----ShopFrame
+-- StarterGui
+-- * LobbyGui
+--   * Main
+--     * ShopClientScript (localScript que je t’ai donné en dernier, qui contient tout le code UI)
+--     * InventoryFrame (menu qui contient un imageButton)
+--     * ShopFrame (menu qui contient un imageButton)
 
-InventoryFrame
-
-LocalScript (celui que je t’ai donné en dernier, qui contient tout le code UI)
 
 
 -- Credits - Script and GUI Created By : Noah & Fred Lossignol
