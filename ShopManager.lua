@@ -4,6 +4,9 @@
 ---- ReplicatedStorage
 ---- ├── EquipEmote (RemoteEvent) -- déjà fait
 ---- ├── BuyItem (RemoteEvent)    -- nouvel event achat
+---- ├── InventoryUpdated (RemoteEvent) -- nouvel event mise à jour inventaire
+---- ├── GetShop (RemoteFunctions) -- pour obtenir le shop serveur->client
+---- ├── GetInventory (RemoteFunction) -- pour obtenir l'inventaire serveur->client
 
 ---- SERVEUR
 ---- ServerScriptService
@@ -349,6 +352,38 @@ InventoryUpdated.OnClientEvent:Connect(function(newInventory)
 end)
 
 
+
+
+
+
+
+
+
+
+
+--******* ORGANISATION FINALE DU JEU (optionnel et à voir selon votre structure) **********
+--******************************************************************************************
+
+ServerScriptService
+- MoneyScript (ou ton script actuel qui gère la monnaie)
+- ShopManager (le script complet serveur qui est donné +haut)
+
+ReplicatedStorage
+- MoneyEvent (remoteEvent)
+- BuyItem (remoteEvent)
+- GetShop (remoteFunction)
+- GetInventory (remoteFunction)
+- InventoryUpdated 
+
+StarterGui
+- ScreenGui
+--- ShopButton
+- InventoryButton
+---ShopFrame
+
+InventoryFrame
+
+LocalScript (celui que je t’ai donné en dernier, qui contient tout le code UI)
 
 
 -- Credits - Script and GUI Created By : Noah & Fred Lossignol
